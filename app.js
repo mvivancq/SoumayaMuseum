@@ -21,19 +21,10 @@
     //add the renderer to the current document
     document.body.appendChild(renderer.domElement );
 
-    //create the material of the cube (basic material)
-    var material_cube = new THREE.MeshLambertMaterial();
-    //set the color of the cube
-    material_cube.color=  new THREE.Color(1,0,0);
-    //then set the renderer to wireframe
-    material_cube.wireframe=false;
-    //create the mesh of a cube
-    var geometry_cube = new THREE.BoxGeometry(1,1,1);
-    var cubes=[];
+    var cube_mesh;
     var sphere_mesh;
+    var time_day = 0;
     var direction = 1;
-    //the number of cubes composing the strip
-    var n=36;
 
     //this clear the scene when parameters are updated
     function ClearScene()
@@ -45,45 +36,40 @@
 
     function CreateScene()
     {
-      for (i=0;i<n;i++)
-      {
-        //all the transformation are 4x4 matrices as
-        //discussed in class
-        var rot2 = new THREE.Matrix4();
-        var sca = new THREE.Matrix4();
-        var rot = new THREE.Matrix4();
-        var tra = new THREE.Matrix4();
-        var combined = new THREE.Matrix4();
-        //this is a simple scale matrix to distort the cube to a
-        // simple tile elongated
-        sca.makeScale(0.5,3,1.5);
-        //this rotate the cube along Z axis consider the angle and the
-        //number of subdivisions it makes the moebois join to itself
-        rot2.makeRotationZ ( i*(Math.PI/n) );
-        //this translate the element on the border of the circle and
-        //along the Y
-        tra.makeTranslation (10,0,0);
-        //this rotate each element to the right position on the circle
-        rot.makeRotationY ( i*(2*Math.PI/n) );
-        //notice: this are applied in backward order
-        //4. it is rotate (notice the object is not on the center of rotation anymore)
-        combined.multiply(rot);
-        //3.then it is translated of a certain radius and along a certain y
-        combined.multiply(tra);
-        //2.each tile is rotate along itself to make a strip that join itself
-        combined.multiply(rot2);
-        //1. the simple cube is scaled on 0,0,0 to make it become a tile
-        combined.multiply(sca);
-        cubes[i] = new THREE.Mesh(geometry_cube,material_cube);
-        cubes[i].applyMatrix(combined);
-        cubes[i].castShadow = true;
+      //create the material of the cube (basic material)
+      var material_cube = new THREE.MeshLambertMaterial();
+      //set the color of the cube
+      material_cube.color=  new THREE.Color(1,1,1);
+      var stone_texture = new THREE.TextureLoader().load('img/text.png');
+      material_cube.map= stone_texture;
+      material_cube.wrapS = THREE.RepeatWrapping;
+      material_cube.repeat = new THREE.Vector2(4,8);
+      //then set the renderer to wireframe
+      material_cube.wireframe=false;
+      //create the mesh of a cube
+      var geometry_cube = new THREE.BoxGeometry(5,20,5);
+      cube_mesh = new THREE.Mesh(geometry_cube,material_cube);
+      cube_mesh.castShadow = true;
+      cube_mesh.position.y+=10;
+      scene.add(cube_mesh);
 
-        cubes[i].geometry.computeBoundingBox();
-        scene.add(cubes[i]);
-      }
 
-      //add a sphere in the middle of the moebius strip
-      //then create a spotlight position and color
+
+      //create the material of the floor (basic material)
+      var material_floor = new THREE.MeshPhongMaterial();
+      material_floor.shininess=100;
+      material_floor.color=  new THREE.Color(0.8,0.9,0.3);
+      material_floor.side = THREE.DoubleSide;
+      var normal_map = new THREE.TextureLoader().load('img/normal_map.gif');
+      normal_map.wrapS = normal_map.wrapT = THREE.RepeatWrapping;
+      normal_map.repeat=new THREE.Vector2(6,6);
+      material_floor.normalMap= normal_map;
+      var geometry_floor = new THREE.BoxGeometry(50,0.5,50);
+      var meshFloor= new THREE.Mesh( geometry_floor, material_floor );
+      meshFloor.receiveShadow=true;
+      scene.add( meshFloor );
+
+      //sun
       var sphere_color = new THREE.Color(0.8,1,1);
       var sphere_geometry = new THREE.SphereGeometry(2, 32, 32 );
       var sphere_material = new THREE.MeshPhongMaterial();
@@ -94,20 +80,9 @@
 
       sphere_material.wireframe=false;
       sphere_mesh = new THREE.Mesh( sphere_geometry, sphere_material );
-      sphere_mesh.castShadow = true;
+      sphere_mesh.position.y = 30;
       scene.add( sphere_mesh );
 
-      var floorMaterial = new THREE.MeshLambertMaterial();
-      floorMaterial.color = new THREE.Color(0.7,0.7,0.7);
-      floorMaterial.side = THREE.DoubleSide;
-      var floorGeometry = new THREE.PlaneGeometry(50,50,200,200);
-      var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-      floor.rotation.x = Math.PI/2;
-      floor.position.y = -10;
-
-      floor.receiveShadow = true;
-      floor.castShadow = false;
-      scene.add(floor);
     }
 
   CreateScene();
@@ -125,22 +100,13 @@
 
   var spotlight = new THREE.SpotLight(new THREE.Color(1,1,1), 0.5);
   spotlight.position.y=30;
-  spotlight.position.x=-20;
   spotlight.angle = Math.PI / 8;
   spotlight.penumbra = 0.4;
   spotlight.castShadow = true;
-  spotlight.target=sphere_mesh;
+  spotlight.target=cube_mesh;
   scene.add(spotlight);
   var spotLightHelper = new THREE.SpotLightHelper( spotlight );
   scene.add( spotLightHelper );
-  //////////////
-	// CONTROLS //
-	//////////////
-
-	// move mouse and: left   click to rotate,
-	//                 middle click to zoom,
-	//                 right  click to pan
-  // add the new control and link to the current camera to transform its position
 
   controls = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -152,18 +118,15 @@
 
     controls.update();
     if (direction == 1) {
-      spotlight.position.x= spotlight.position.x + 0.1;
-      if (spotlight.position.x > 20) {
+      spotlight.position.x = 40 * Math.cos(3.1416/12*time_day);
+      spotlight.position.y = 40 * Math.sin(3.1416/12*time_day);
+      sphere_mesh.position.y = spotlight.position.y;
+      sphere_mesh.position.x = spotlight.position.x;
+      if (time_day > 12) {
         direction = 2;
       }
     }
-    if (direction == 2) {
-      spotlight.position.x= spotlight.position.x - 0.1;
-      if (spotlight.position.x < -20) {
-        direction = 1;
-      }
-    }
-    spotlight.target=sphere_mesh;
+    spotlight.target=cube_mesh;
     spotLightHelper.update();
     //finally perform a recoursive call to update again
     //this must be called because the mouse change the camera position
@@ -183,6 +146,20 @@
     camera.updateProjectionMatrix();
     renderer.render(scene,camera);
   };
+
+  var gui;
+  function buildGui()
+  {
+    gui = new dat.GUI();
+    var params = {
+      time: time_day
+    };
+    gui.add(params, 'time', 0, 12).onChange(function(val){
+      time_day = val;
+    });
+    gui.open();
+  }
+  buildGui();
 
   //link the resize of the window to the update of the camera
   window.addEventListener( 'resize', MyResize);
