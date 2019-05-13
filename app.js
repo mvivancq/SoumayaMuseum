@@ -40,10 +40,11 @@
       var material_cube = new THREE.MeshLambertMaterial();
       //set the color of the cube
       material_cube.color=  new THREE.Color(1,1,1);
-      var stone_texture = new THREE.TextureLoader().load('img/text.png');
+      var stone_texture = new THREE.TextureLoader().load('img/hexagon.jpg');
       material_cube.map= stone_texture;
-      material_cube.wrapS = THREE.RepeatWrapping;
-      material_cube.repeat = new THREE.Vector2(4,8);
+      stone_texture.wrapT = THREE.RepeatWrapping;
+      stone_texture.wrapS = THREE.RepeatWrapping;
+      stone_texture.repeat = new THREE.Vector2(4,6);
       //then set the renderer to wireframe
       material_cube.wireframe=false;
       //create the mesh of a cube
@@ -73,8 +74,8 @@
       var sphere_color = new THREE.Color(0.8,1,1);
       var sphere_geometry = new THREE.SphereGeometry(2, 32, 32 );
       var sphere_material = new THREE.MeshPhongMaterial();
-
-      //shininess and color
+      var moon_texture = new THREE.TextureLoader().load('img/moon.png');
+      sphere_material.map= moon_texture;
       sphere_material.color=sphere_color;
       sphere_material.shininess=100;
 
@@ -89,18 +90,18 @@
 
   //lighting
   //basic light from camera towards the scene
-  var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.5 );
+  var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.3 );
   camera.add( cameralight );
   scene.add(camera);
 
   //then add ambient
   //ambient lighting
-  var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.2);
+  var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.3);
   scene.add(ambientlight);
 
   var spotlight = new THREE.SpotLight(new THREE.Color(1,1,1), 0.5);
   spotlight.position.y=30;
-  spotlight.angle = Math.PI / 8;
+  spotlight.angle = Math.PI / 4;
   spotlight.penumbra = 0.4;
   spotlight.castShadow = true;
   spotlight.target=cube_mesh;
@@ -126,6 +127,7 @@
         direction = 2;
       }
     }
+    sphere_mesh.rotation.x+=0.001
     spotlight.target=cube_mesh;
     spotLightHelper.update();
     //finally perform a recoursive call to update again
