@@ -23,9 +23,13 @@
 
     var cube_mesh;
     var sphere_mesh;
+    var moon_texture;
+    var sphere_color;
+    var sphere_geometry;
+    var sphere_material;
     var time_day = 0;
     var direction = 1;
-    var dia = true;
+    var dia = false;
 
     //this clear the scene when parameters are updated
     function ClearScene()
@@ -72,13 +76,15 @@
       scene.add( meshFloor );
 
       //sun
-      var sphere_color = new THREE.Color(0.8,1,1);
-      var sphere_geometry = new THREE.SphereGeometry(2, 32, 32 );
-      var sphere_material = new THREE.MeshPhongMaterial();
-      var moon_texture = new THREE.TextureLoader().load('img/moon.png');
+      sphere_color = new THREE.Color(0.8,1,1);
+      sphere_geometry = new THREE.SphereGeometry(2, 32, 32 );
+      sphere_material = new THREE.MeshLambertMaterial();
+      moon_texture = new THREE.TextureLoader().load('img/moon.png');
       sphere_material.map= moon_texture;
       sphere_material.color=sphere_color;
       sphere_material.shininess=100;
+      sphere_material.emissive = new THREE.Color("rgb(100, 100, 150)");
+      sphere_material.emissiveIntensity = .3;
 
       sphere_material.wireframe=false;
       sphere_mesh = new THREE.Mesh( sphere_geometry, sphere_material );
@@ -91,16 +97,16 @@
 
   //lighting
   //basic light from camera towards the scene
-  var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.1 );
+  var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.15 );
   camera.add( cameralight );
   scene.add(camera);
 
   //then add ambient
   //ambient lighting
-  var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.1);
+  var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.15);
   scene.add(ambientlight);
 
-  var moonlight = new THREE.PointLight(new THREE.Color(1,1,1), 0.4);
+  var moonlight = new THREE.PointLight(new THREE.Color("rgb(100, 100, 150)"), 0.3);
   moonlight.position.y=30;
   moonlight.castShadow = true;
   scene.add(moonlight);
@@ -123,7 +129,7 @@
         direction = 2;
       }
     }
-    sphere_mesh.rotation.x+=0.001
+    sphere_mesh.rotation.x+=0.01
     requestAnimationFrame(MyUpdateLoop);
 
   };
@@ -146,13 +152,30 @@
   {
     gui = new dat.GUI();
     var params = {
-      time: time_day
+      time: time_day,
+      day_nigth: dia
     };
     gui.add(params, 'time', 0, 12).onChange(function(val){
       time_day = val;
     });
-    gui.add(params, 'time', 0, 12).onChange(function(val){
-      time_day = val;
+    gui.add(params, 'day_nigth', 0, 1).onChange(function(val){
+      dia = !dia;
+      if (dia) {
+        moon_texture = new THREE.TextureLoader().load('img/sun.jpg');
+        sphere_material.map= moon_texture;
+        sphere_material.emissive = new THREE.Color("rgb(231, 248, 14)");
+        sphere_material.emissiveIntensity = .5;
+        moonlight.color.setHex(0xFFFF99);
+        moonlight.intensity =  0.5;
+      }
+      else {
+        moon_texture = new THREE.TextureLoader().load('img/moon.png');
+        sphere_material.map= moon_texture;
+        sphere_material.emissive = new THREE.Color("rgb(100, 100, 150)");
+        sphere_material.emissiveIntensity = .3;
+        moonlight.color.setHex(0x646496);
+        moonlight.intensity =  0.3;
+      }
     });
     gui.open();
   }
