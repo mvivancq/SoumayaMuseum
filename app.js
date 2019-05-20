@@ -17,6 +17,7 @@
     renderer.setSize(window.innerWidth,window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCSoftShadowMap;
+    renderer.setClearColor (0x000011);
 
     //add the renderer to the current document
     document.body.appendChild(renderer.domElement );
@@ -28,7 +29,7 @@
     var sphere_geometry;
     var sphere_material;
     var time_day = 0;
-    var direction = 1;
+    var auto = true;
     var dia = false;
 
     //this clear the scene when parameters are updated
@@ -122,13 +123,15 @@
     renderer.render(scene,camera);
 
     controls.update();
-    if (direction == 1) {
-      moonlight.position.x = 40 * Math.cos(3.1416/12*time_day);
-      moonlight.position.y = 40 * Math.sin(3.1416/12*time_day);
-      sphere_mesh.position.y = moonlight.position.y;
-      sphere_mesh.position.x = moonlight.position.x;
-      if (time_day > 12) {
-        direction = 2;
+    moonlight.position.x = 40 * Math.cos(3.1416/720*time_day);
+    moonlight.position.y = 40 * Math.sin(3.1416/720*time_day);
+    sphere_mesh.position.y = moonlight.position.y;
+    sphere_mesh.position.x = moonlight.position.x;
+    if (auto) {
+      time_day+=1;
+      if (time_day>720) {
+        time_day=0;
+        toggleDayN();
       }
     }
     sphere_mesh.rotation.x+=0.01
@@ -150,24 +153,15 @@
   };
 
   var gui;
-  function buildGui()
-  {
-    gui = new dat.GUI();
-    var params = {
-      time: time_day,
-      day_nigth: dia
-    };
-    gui.add(params, 'time', 0, 12).onChange(function(val){
-      time_day = val;
-    });
-    gui.add(params, 'day_nigth', 0, 1).onChange(function(val){
+  function toggleDayN(){
       dia = !dia;
       if (dia) {
         moon_texture = new THREE.TextureLoader().load('img/sun.jpg');
         sphere_material.map= moon_texture;
         sphere_material.emissive = new THREE.Color("rgb(231, 248, 14)");
         sphere_material.emissiveIntensity = .5;
-        moonlight.color.setHex(0xFFFF99);
+        moonlight.color.setHex(0xFFFFCC);
+        renderer.setClearColor (0x0080FF);
         moonlight.intensity =  0.5;
       }
       else {
@@ -176,9 +170,25 @@
         sphere_material.emissive = new THREE.Color("rgb(100, 100, 150)");
         sphere_material.emissiveIntensity = .3;
         moonlight.color.setHex(0x646496);
+        renderer.setClearColor (0x000011);
         moonlight.intensity =  0.3;
       }
+  }
+  function buildGui()
+  {
+    gui = new dat.GUI();
+    var params = {
+      time: time_day,
+      day_nigth: dia,
+      auto: auto
+    };
+    gui.add(params, 'time', 0, 720).onChange(function(val){
+      time_day = val;
     });
+    gui.add(params, 'auto', 0, 1).onChange(function(){
+      auto = !auto;
+    });
+    gui.add(params, 'day_nigth', 0, 1).onChange(toggleDayN);
     gui.open();
   }
   buildGui();
