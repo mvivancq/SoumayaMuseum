@@ -25,6 +25,7 @@
     var sphere_mesh;
     var time_day = 0;
     var direction = 1;
+    var dia = true;
 
     //this clear the scene when parameters are updated
     function ClearScene()
@@ -59,7 +60,7 @@
       //create the material of the floor (basic material)
       var material_floor = new THREE.MeshPhongMaterial();
       material_floor.shininess=100;
-      material_floor.color=  new THREE.Color(0.8,0.9,0.3);
+      material_floor.color=  new THREE.Color(0.8,0.8,0.8);
       material_floor.side = THREE.DoubleSide;
       var normal_map = new THREE.TextureLoader().load('img/normal_map.gif');
       normal_map.wrapS = normal_map.wrapT = THREE.RepeatWrapping;
@@ -90,24 +91,19 @@
 
   //lighting
   //basic light from camera towards the scene
-  var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.3 );
+  var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.1 );
   camera.add( cameralight );
   scene.add(camera);
 
   //then add ambient
   //ambient lighting
-  var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.3);
+  var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.1);
   scene.add(ambientlight);
 
-  var spotlight = new THREE.SpotLight(new THREE.Color(1,1,1), 0.5);
-  spotlight.position.y=30;
-  spotlight.angle = Math.PI / 4;
-  spotlight.penumbra = 0.4;
-  spotlight.castShadow = true;
-  spotlight.target=cube_mesh;
-  scene.add(spotlight);
-  var spotLightHelper = new THREE.SpotLightHelper( spotlight );
-  scene.add( spotLightHelper );
+  var moonlight = new THREE.PointLight(new THREE.Color(1,1,1), 0.4);
+  moonlight.position.y=30;
+  moonlight.castShadow = true;
+  scene.add(moonlight);
 
   controls = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -119,19 +115,15 @@
 
     controls.update();
     if (direction == 1) {
-      spotlight.position.x = 40 * Math.cos(3.1416/12*time_day);
-      spotlight.position.y = 40 * Math.sin(3.1416/12*time_day);
-      sphere_mesh.position.y = spotlight.position.y;
-      sphere_mesh.position.x = spotlight.position.x;
+      moonlight.position.x = 40 * Math.cos(3.1416/12*time_day);
+      moonlight.position.y = 40 * Math.sin(3.1416/12*time_day);
+      sphere_mesh.position.y = moonlight.position.y;
+      sphere_mesh.position.x = moonlight.position.x;
       if (time_day > 12) {
         direction = 2;
       }
     }
     sphere_mesh.rotation.x+=0.001
-    spotlight.target=cube_mesh;
-    spotLightHelper.update();
-    //finally perform a recoursive call to update again
-    //this must be called because the mouse change the camera position
     requestAnimationFrame(MyUpdateLoop);
 
   };
@@ -156,6 +148,9 @@
     var params = {
       time: time_day
     };
+    gui.add(params, 'time', 0, 12).onChange(function(val){
+      time_day = val;
+    });
     gui.add(params, 'time', 0, 12).onChange(function(val){
       time_day = val;
     });
