@@ -41,26 +41,6 @@
 
     function CreateScene()
     {
-      //create the material of the cube (basic material)
-      var material_cube = new THREE.MeshLambertMaterial();
-      //set the color of the cube
-      material_cube.color=  new THREE.Color(1,1,1);
-      var stone_texture = new THREE.TextureLoader().load('img/hexagon.jpg');
-      material_cube.map= stone_texture;
-      stone_texture.wrapT = THREE.RepeatWrapping;
-      stone_texture.wrapS = THREE.RepeatWrapping;
-      stone_texture.repeat = new THREE.Vector2(4,6);
-      //then set the renderer to wireframe
-      material_cube.wireframe=false;
-      //create the mesh of a cube
-      var geometry_cube = new THREE.BoxGeometry(5,20,5);
-      cube_mesh = new THREE.Mesh(geometry_cube,material_cube);
-      cube_mesh.castShadow = true;
-      cube_mesh.position.y+=10;
-      scene.add(cube_mesh);
-
-
-
       //create the material of the floor (basic material)
       var material_floor = new THREE.MeshPhongMaterial();
       material_floor.shininess=100;
@@ -91,6 +71,28 @@
       sphere_mesh.position.y = 30;
       scene.add( sphere_mesh );
 
+      var loader = new THREE.STLLoader();
+      var museum_mesh = null;
+      loader.load('models/Soumaya.stl', function ( geometry ) {
+            geometry.computeVertexNormals();
+            geometry.computeBoundingBox();
+
+            var center = geometry.boundingBox.getCenter();
+            var size = geometry.boundingBox.getSize();
+
+            var material = new THREE.MeshPhongMaterial();
+            material.color= new THREE.Color(0.8, 0.8, 0.8);
+            material.shininess=100;
+            museum_mesh = new THREE.Mesh( geometry, material );
+            museum_mesh.scale.set(0.5,0.5,0.5);
+            museum_mesh.position.x-=size.x/4;
+            museum_mesh.position.z-=size.z/4;
+            museum_mesh.position.y+=0.5;
+            museum_mesh.castShadow = true;
+            museum_mesh.name = "loaded_mesh";
+
+            scene.add( museum_mesh );
+        } );
     }
 
   CreateScene();
