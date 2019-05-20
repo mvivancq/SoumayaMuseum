@@ -82,7 +82,11 @@
             var size = geometry.boundingBox.getSize();
 
             var material = new THREE.MeshPhongMaterial();
-            material.color= new THREE.Color(0.8, 0.8, 0.8);
+            material.color= new THREE.Color(0.8, 0.8, 0.8);/*
+            var museum_texture = new THREE.TextureLoader().load('img/hexagon.jpg');
+            museum_texture.wrapS = museum_texture.wrapT = THREE.RepeatWrapping;
+            museum_texture.repeat=new THREE.Vector2(20,20);
+            material.map= museum_texture;*/
             material.shininess=100;
             museum_mesh = new THREE.Mesh( geometry, material );
             museum_mesh.scale.set(0.5,0.5,0.5);
