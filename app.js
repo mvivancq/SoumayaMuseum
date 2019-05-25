@@ -6,9 +6,9 @@
     var camera = new THREE.PerspectiveCamera(45,ratio,0.1,1000);
 
     //set the camera position
-    camera.position.set(0,0,15);
+    camera.position.set(0,50,50);
     // and the direction
-	  camera.lookAt(0,0,1);
+	  camera.lookAt(0,0,0);
 
     //create the webgl renderer
     var renderer = new THREE.WebGLRenderer( );
@@ -44,17 +44,66 @@
     {
       //create the material of the floor (basic material)
       var material_floor = new THREE.MeshPhongMaterial();
-      material_floor.shininess=100;
-      material_floor.color=  new THREE.Color(0.8,0.8,0.8);
-      material_floor.side = THREE.DoubleSide;
-      var normal_map = new THREE.TextureLoader().load('img/normal_map.gif');
+      material_floor.shininess=50;
+      // material_floor.color=  new THREE.Color(0,1,0);
+      // material_floor.side = THREE.DoubleSide;
+      var normal_map = new THREE.TextureLoader().load('img/grass3.jpg');
       normal_map.wrapS = normal_map.wrapT = THREE.RepeatWrapping;
       normal_map.repeat=new THREE.Vector2(6,6);
-      material_floor.normalMap= normal_map;
+      normal_map.anisotropy = 16;
+      material_floor.map= normal_map;
       var geometry_floor = new THREE.BoxGeometry(50,0.5,50);
       var meshFloor= new THREE.Mesh( geometry_floor, material_floor );
       meshFloor.receiveShadow=true;
       scene.add( meshFloor );
+
+      var material_road1 = new THREE.MeshPhongMaterial();
+      var material_road_map = new THREE.TextureLoader().load("/img/floor.png");
+      material_road_map.wrapS = material_road_map.wrapT = THREE.RepeatWrapping;
+      material_road_map.anisotropy = 16;
+      material_road_map.shininess=0;
+      // material_road_map.color= new THREE.Color(0.8,0.8,0.8);
+      material_road_map.repeat=new THREE.Vector2(2,15);
+      material_road1.map = material_road_map;
+      var geometry_road1 = new THREE.BoxGeometry(8,0.25,50);
+      var geometry_road2 = new THREE.BoxGeometry(50,0.25,8);
+      var meshRoad = new THREE.Mesh(geometry_road1, material_road1);
+      meshRoad.receiveShadow = true;
+      meshRoad.position.y+=0.375;
+      scene.add(meshRoad);
+
+      var material_road2 = new THREE.MeshPhongMaterial();
+      var material_road_map = new THREE.TextureLoader().load("/img/floor.png");
+      material_road_map.wrapS = material_road_map.wrapT = THREE.RepeatWrapping;
+      material_road_map.anisotropy = 16;
+      material_road_map.shininess=0;
+      // material_road_map.color= new THREE.Color(0.8,0.8,0.8);
+      material_road_map.repeat=new THREE.Vector2(15,2);
+      material_road2.map = material_road_map;
+      var meshRoad = new THREE.Mesh(geometry_road2, material_road2);
+      meshRoad.position.y+=0.375;
+      scene.add(meshRoad);
+
+      var material_stairs = new THREE.MeshPhongMaterial();
+      var texture_stairs = new THREE.TextureLoader().load("/img/stairs.jpg");
+      texture_stairs.wrapS = material_stairs.wrapT = THREE.RepeatWrapping;
+      // texture_stairs.repeat = new THREE.Vector2(10,10);
+      texture_stairs.anisotropy = 16;
+      texture_stairs.shininess=0;
+      texture_stairs.color= new THREE.Color(0.8,0.8,0.8);
+      material_stairs.map = texture_stairs;
+      let initialRadius = 12.5;
+      for (var i = 0; i < 10; i++) {
+        var geometry_stairs = new THREE.CylinderGeometry(initialRadius - i*0.3, initialRadius - i*0.3, 0.1, 64);
+        var meshStairs = new THREE.Mesh(geometry_stairs, material_stairs);
+        meshStairs.position.y+=0.25 + i * 0.1;
+        if (i == 2) {
+          meshStairs.position.y+=0.01;
+        }
+        meshStairs.receiveShadow = true;
+        scene.add(meshStairs);
+      }
+
 
       //sun
       sphere_color = new THREE.Color(0.8,1,1);
@@ -92,7 +141,7 @@
             museum_mesh.scale.set(0.5,0.5,0.5);
             museum_mesh.position.x-=size.x/4;
             museum_mesh.position.z-=size.z/4;
-            museum_mesh.position.y+=0.5;
+            museum_mesh.position.y+=1.25;
             museum_mesh.castShadow = true;
             museum_mesh.name = "loaded_mesh";
 
@@ -125,7 +174,7 @@
   {
     //call the render with the scene and the camera
     renderer.render(scene,camera);
-
+    
     controls.update();
     moonlight.position.x = 40 * Math.cos(3.1416/720*time_day);
     moonlight.position.y = 40 * Math.sin(3.1416/720*time_day);
