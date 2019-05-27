@@ -8,7 +8,7 @@
     //set the camera position
     camera.position.set(0,50,50);
     // and the direction
-	  camera.lookAt(0,0,0);
+    camera.lookAt(0,0,0);
 
     //create the webgl renderer
     var renderer = new THREE.WebGLRenderer( );
@@ -31,6 +31,7 @@
     var time_day = 0;
     var auto = true;
     var dia = false;
+    var container;
 
     //this clear the scene when parameters are updated
     function ClearScene()
@@ -103,8 +104,6 @@
         meshStairs.receiveShadow = true;
         scene.add(meshStairs);
       }
-
-
       //sun
       sphere_color = new THREE.Color(0.8,1,1);
       sphere_geometry = new THREE.SphereGeometry(2, 32, 32 );
@@ -115,33 +114,48 @@
       sphere_material.shininess=100;
       sphere_material.emissive = new THREE.Color("rgb(100, 100, 150)");
       sphere_material.emissiveIntensity = .3;
-
       sphere_material.wireframe=false;
       sphere_mesh = new THREE.Mesh( sphere_geometry, sphere_material );
       sphere_mesh.position.y = 30;
       scene.add( sphere_mesh );
+  
+      //Soumaya code
+  // texture
+  var manager = new THREE.LoadingManager();
+  manager.onProgress = function(item, loaded, total) {
 
-      var loader = new THREE.OBJLoader();
-      var museum_mesh = null;
-      loader.load('models/Soumaya.obj', function ( geometry ) {
+    console.log(item, loaded, total);
 
-        geometry.traverse(function (child) {
+  };
+
+// model
+        var onProgress = function ( xhr ) {
+          if ( xhr.lengthComputable ) {
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+          }
+        };
+        var onError = function () { };
+        var mtlloader = new THREE.MTLLoader()
+          mtlloader.setPath( '/models/' )
+          mtlloader.load( 'Soumaya.mtl', function ( materials ) {
+            materials.preload();
+            var objloader = new THREE.OBJLoader()
+            objloader.setMaterials( materials )
+            objloader.setPath( '/models/' )
+            objloader.load( 'Soumaya.obj', function ( geometry ) 
+      {
+            geometry.traverse(function (child) 
+        {
         
-          if (child instanceof THREE.Mesh) {
+          if (child instanceof THREE.Mesh) 
+          {
             child.geometry.computeFaceNormals();
             child.geometry.computeVertexNormals();
             child.geometry.computeBoundingBox();
 
             var center = child.geometry.boundingBox.getCenter();
             var size = child.geometry.boundingBox.getSize();
-
-            child.material = new THREE.MeshPhongMaterial();
-            child.material.color= new THREE.Color(0.8, 0.8, 0.8);
-            var museum_texture = new THREE.TextureLoader().load('img/hexagon.jpg');
-            museum_texture.wrapS = museum_texture.wrapT = THREE.RepeatWrapping;
-            museum_texture.repeat=new THREE.Vector2(200,200);
-            child.material.map= museum_texture;
-            child.material.shininess=100;
             museum_mesh = new THREE.Mesh( child.geometry, child.material );
             museum_mesh.scale.set(0.5,0.5,0.5);
             museum_mesh.position.x-=size.x/4;
@@ -149,11 +163,11 @@
             museum_mesh.position.y+=1.25;
             museum_mesh.castShadow = true;
             museum_mesh.name = "loaded_mesh";
-
             scene.add( museum_mesh );
           }
         });
-    });
+        }, onProgress, onError);
+      });
   }
   CreateScene();
 
