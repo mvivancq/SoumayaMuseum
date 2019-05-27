@@ -121,23 +121,28 @@
       sphere_mesh.position.y = 30;
       scene.add( sphere_mesh );
 
-      var loader = new THREE.STLLoader();
+      var loader = new THREE.OBJLoader();
       var museum_mesh = null;
-      loader.load('models/Soumaya.stl', function ( geometry ) {
-            geometry.computeVertexNormals();
-            geometry.computeBoundingBox();
+      loader.load('models/Soumaya.obj', function ( geometry ) {
 
-            var center = geometry.boundingBox.getCenter();
-            var size = geometry.boundingBox.getSize();
+        geometry.traverse(function (child) {
+        
+          if (child instanceof THREE.Mesh) {
+            child.geometry.computeFaceNormals();
+            child.geometry.computeVertexNormals();
+            child.geometry.computeBoundingBox();
 
-            var material = new THREE.MeshPhongMaterial();
-            material.color= new THREE.Color(0.8, 0.8, 0.8);/*
+            var center = child.geometry.boundingBox.getCenter();
+            var size = child.geometry.boundingBox.getSize();
+
+            child.material = new THREE.MeshPhongMaterial();
+            child.material.color= new THREE.Color(0.8, 0.8, 0.8);
             var museum_texture = new THREE.TextureLoader().load('img/hexagon.jpg');
             museum_texture.wrapS = museum_texture.wrapT = THREE.RepeatWrapping;
-            museum_texture.repeat=new THREE.Vector2(20,20);
-            material.map= museum_texture;*/
-            material.shininess=100;
-            museum_mesh = new THREE.Mesh( geometry, material );
+            museum_texture.repeat=new THREE.Vector2(200,200);
+            child.material.map= museum_texture;
+            child.material.shininess=100;
+            museum_mesh = new THREE.Mesh( child.geometry, child.material );
             museum_mesh.scale.set(0.5,0.5,0.5);
             museum_mesh.position.x-=size.x/4;
             museum_mesh.position.z-=size.z/4;
@@ -146,9 +151,10 @@
             museum_mesh.name = "loaded_mesh";
 
             scene.add( museum_mesh );
-        } );
-    }
-
+          }
+        });
+    });
+  }
   CreateScene();
 
   //lighting
@@ -232,7 +238,7 @@
     gui = new dat.GUI();
     var params = {
       time: time_day,
-      day_nigth: dia,
+      day_night: dia,
       auto: auto
     };
     gui.add(params, 'time', 0, 720).onChange(function(val){
@@ -241,7 +247,7 @@
     gui.add(params, 'auto', 0, 1).onChange(function(){
       auto = !auto;
     });
-    gui.add(params, 'day_nigth', 0, 1).onChange(toggleDayN);
+    gui.add(params, 'day_night', 0, 1).onChange(toggleDayN);
     gui.open();
   }
   buildGui();
