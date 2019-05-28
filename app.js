@@ -118,17 +118,8 @@ function CreateScene() {
   sphere_mesh = new THREE.Mesh( sphere_geometry, sphere_material );
   sphere_mesh.position.y = 30;
   scene.add( sphere_mesh );
-
-  //Soumaya code
-  // texture
-  var manager = new THREE.LoadingManager();
-  manager.onProgress = function(item, loaded, total) {
-
-    console.log(item, loaded, total);
-
-  };
-
-    // model
+  
+  // model
   var onProgress = function ( xhr ) {
     if ( xhr.lengthComputable ) {
       var percentComplete = xhr.loaded / xhr.total * 100;
@@ -136,9 +127,70 @@ function CreateScene() {
     }
   };
   var onError = function () { };
-  var mtlloader = new THREE.MTLLoader()
-    mtlloader.setPath( '/models/' )
-    mtlloader.load( 'Soumaya1.mtl', function ( materials ) {
+  //Trees
+      var mtlTrees = new THREE.MTLLoader()
+      mtlTrees.setPath( '/models/' )
+          mtlTrees.load( 'lowpolytree.mtl', function ( materials ) {
+              materials.preload();
+              var objTrees = new THREE.OBJLoader()
+              objTrees.setMaterials( materials )
+              objTrees.setPath( '/models/' )
+              objTrees.load( 'lowpolytree.obj', function ( object ) {
+                object.traverse(function (child) {
+                  if (child instanceof THREE.Mesh) 
+                  {
+                    child.geometry.computeFaceNormals();
+                    child.geometry.computeVertexNormals();
+                    child.geometry.computeBoundingBox();
+                    var center = child.geometry.boundingBox.getCenter();
+                    //first quadrant
+                    for(var i = 0 ; i < 15 ; i++)
+                    {
+                      trees1 = new THREE.Mesh(child.geometry, child.material);
+                      trees1.position.x = Math.floor((Math.random() * 15) + 10);
+                      trees1.position.y = 2;
+                      trees1.position.z = Math.floor((Math.random() * 15) + 10);;
+                      trees1.castShadow = true;
+                      scene.add( trees1 );
+                    }
+                    //second quadrant
+                     for(var i = 0 ; i < 15 ; i++)
+                    {
+                      trees2 = new THREE.Mesh(child.geometry, child.material);
+                      trees2.position.x = Math.floor((Math.random() * 15) - 23);
+                      trees2.position.y = 2;
+                      trees2.position.z = Math.floor((Math.random() * 15) - 23);;
+                      trees2.castShadow = true;
+                      scene.add( trees2 );
+                    }
+                    //third quadrant
+                     for(var i = 0 ; i < 15 ; i++)
+                    {
+                      trees3 = new THREE.Mesh(child.geometry, child.material);
+                      trees3.position.x = Math.floor((Math.random() * -15) + 23);
+                      trees3.position.y = 2;
+                      trees3.position.z = Math.floor((Math.random() * -15) - 10);
+                      trees3.castShadow = true;
+                      scene.add( trees3 );
+                    }
+                    //fourth quadrant
+                     for(var i = 0 ; i < 15 ; i++)
+                    {
+                      trees4 = new THREE.Mesh(child.geometry, child.material);
+                      trees4.position.x = Math.floor((Math.random() * -15) - 10);
+                      trees4.position.y = 2;
+                      trees4.position.z = Math.floor((Math.random() * -15) + 25);
+                      trees4.castShadow = true;
+                      scene.add( trees4 );
+                    }
+                  }
+                });
+              }, onProgress, onError );
+          } );
+    //Soumaya code
+      var mtlloader = new THREE.MTLLoader()
+      mtlloader.setPath( '/models/' )
+      mtlloader.load( 'Soumaya1.mtl', function ( materials ) {
       materials.preload();
       var objloader = new THREE.OBJLoader()
       objloader.setMaterials( materials )
