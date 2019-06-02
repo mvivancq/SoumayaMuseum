@@ -44,7 +44,7 @@ var clouds = new Array(maxClouds);
 var cloudCount = 0;
 var rainy = false;
 var cloudy = false;
-var numTrees = 15;
+var numTrees = 30;
 
 //this clear the scene when parameters are updated
 function ClearScene() {
@@ -149,8 +149,9 @@ function CreateScene() {
           //first quadrant
           for (var i = 0; i < numTrees; i++) {
             trees1 = new THREE.Mesh(child.geometry, child.material);
+            trees1.scale.set(0.5,0.5,0.5);
             trees1.position.x = Math.floor((Math.random() * 15) + 10);
-            trees1.position.y = 2;
+            trees1.position.y = 1.2;
             trees1.position.z = Math.floor((Math.random() * 15) + 10);;
             trees1.castShadow = true;
             trees1.receiveShadow = true;
@@ -159,8 +160,9 @@ function CreateScene() {
           //second quadrant
           for (var i = 0; i < numTrees; i++) {
             trees2 = new THREE.Mesh(child.geometry, child.material);
+            trees2.scale.set(0.5,0.5,0.5);
             trees2.position.x = Math.floor((Math.random() * 15) - 23);
-            trees2.position.y = 2;
+            trees2.position.y = 1.2;
             trees2.position.z = Math.floor((Math.random() * 15) - 23);;
             trees2.castShadow = true;
             trees2.receiveShadow = true;
@@ -169,8 +171,9 @@ function CreateScene() {
           //third quadrant
           for (var i = 0; i < numTrees; i++) {
             trees3 = new THREE.Mesh(child.geometry, child.material);
+            trees3.scale.set(0.5,0.5,0.5);
             trees3.position.x = Math.floor((Math.random() * -15) + 23);
-            trees3.position.y = 2;
+            trees3.position.y = 1.2;
             trees3.position.z = Math.floor((Math.random() * -15) - 10);
             trees3.castShadow = true;
             trees3.receiveShadow = true;
@@ -179,8 +182,9 @@ function CreateScene() {
           //fourth quadrant
           for (var i = 0; i < numTrees; i++) {
             trees4 = new THREE.Mesh(child.geometry, child.material);
+            trees4.scale.set(0.5,0.5,0.5);
             trees4.position.x = Math.floor((Math.random() * -15) - 10);
-            trees4.position.y = 2;
+            trees4.position.y = 1.2;
             trees4.position.z = Math.floor((Math.random() * -15) + 25);
             trees4.castShadow = true;
             trees4.receiveShadow = true;
