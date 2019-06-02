@@ -44,6 +44,7 @@ var clouds = new Array(maxClouds);
 var cloudCount = 0;
 var rainy = false;
 var cloudy = false;
+var numTrees = 15;
 
 //this clear the scene when parameters are updated
 function ClearScene() {
@@ -146,7 +147,7 @@ function CreateScene() {
           child.geometry.computeBoundingBox();
           var center = child.geometry.boundingBox.getCenter();
           //first quadrant
-          for (var i = 0; i < 15; i++) {
+          for (var i = 0; i < numTrees; i++) {
             trees1 = new THREE.Mesh(child.geometry, child.material);
             trees1.position.x = Math.floor((Math.random() * 15) + 10);
             trees1.position.y = 2;
@@ -156,7 +157,7 @@ function CreateScene() {
             scene.add( trees1 );
           }
           //second quadrant
-          for (var i = 0; i < 15; i++) {
+          for (var i = 0; i < numTrees; i++) {
             trees2 = new THREE.Mesh(child.geometry, child.material);
             trees2.position.x = Math.floor((Math.random() * 15) - 23);
             trees2.position.y = 2;
@@ -166,7 +167,7 @@ function CreateScene() {
             scene.add( trees2 );
           }
           //third quadrant
-          for (var i = 0; i < 15; i++) {
+          for (var i = 0; i < numTrees; i++) {
             trees3 = new THREE.Mesh(child.geometry, child.material);
             trees3.position.x = Math.floor((Math.random() * -15) + 23);
             trees3.position.y = 2;
@@ -176,7 +177,7 @@ function CreateScene() {
             scene.add( trees3 );
           }
           //fourth quadrant
-          for (var i = 0; i < 15; i++) {
+          for (var i = 0; i < numTrees; i++) {
             trees4 = new THREE.Mesh(child.geometry, child.material);
             trees4.position.x = Math.floor((Math.random() * -15) - 10);
             trees4.position.y = 2;
