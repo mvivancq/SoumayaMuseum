@@ -16,6 +16,7 @@ var renderer = new THREE.WebGLRenderer( );
 //set the size of the rendering window
 renderer.setSize(window.innerWidth,window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.soft = true;
 renderer.shadowMap.type = THREE.PCSoftShadowMap;
 renderer.setClearColor (0x000011);
 
@@ -108,7 +109,7 @@ function CreateScene() {
 
   //sun
   sphere_color = new THREE.Color(0.8,1,1);
-  sphere_geometry = new THREE.SphereGeometry(2, 32, 32 );
+  sphere_geometry = new THREE.SphereGeometry(2, 32, 32);
   sphere_material = new THREE.MeshLambertMaterial();
   moon_texture = new THREE.TextureLoader().load('img/moon.png');
   sphere_material.map = moon_texture;
@@ -277,7 +278,9 @@ var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),0.15);
 scene.add(ambientlight);
 
 var moonlight = new THREE.PointLight(new THREE.Color("rgb(100, 100, 150)"), 0.3);
-moonlight.position.y=30;
+moonlight.position.y = 30;
+moonlight.shadow.mapSize.width = 2048;
+moonlight.shadow.mapSize.height = 2048;
 moonlight.castShadow = true;
 scene.add(moonlight);
 
@@ -307,7 +310,7 @@ var MyUpdateLoop = function () {
 
 requestAnimationFrame(MyUpdateLoop);
 
-//this fucntion is called when the window is resized
+//this function is called when the window is resized
 var MyResize = function () {
   var width = window.innerWidth;
   var height = window.innerHeight;
