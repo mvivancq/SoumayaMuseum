@@ -6,7 +6,7 @@ var ratio = window.innerWidth/window.innerHeight;
 var camera = new THREE.PerspectiveCamera(45,ratio,0.1,1000);
 
 //set the camera position
-camera.position.set(0,50,50);
+camera.position.set(0,50,100);
 // and the direction
 camera.lookAt(0,0,0);
 
@@ -32,6 +32,17 @@ var time_day = 0;
 var auto = true;
 var dia = false;
 var container;
+var rain_geometry = new THREE.Geometry();
+var rain_material = new THREE.PointsMaterial();
+var rain = new THREE.Points();
+var rainCount = 100;
+var maxRain = 5000;
+var points = new Array(maxRain);
+var maxClouds = 500;
+var clouds = new Array(maxClouds);
+var cloudCount = 0;
+var rainy = false;
+var cloudy = false;
 
 //this clear the scene when parameters are updated
 function ClearScene() {
@@ -91,6 +102,7 @@ function CreateScene() {
     var meshStairs = new THREE.Mesh(geometry_stairs, material_stairs);
     meshStairs.position.y += 0.25 + i * 0.1;
     meshStairs.receiveShadow = true;
+    meshStairs.castShadow = true;
     scene.add(meshStairs);
   }
 
@@ -139,6 +151,7 @@ function CreateScene() {
             trees1.position.y = 2;
             trees1.position.z = Math.floor((Math.random() * 15) + 10);;
             trees1.castShadow = true;
+            trees1.receiveShadow = true;
             scene.add( trees1 );
           }
           //second quadrant
@@ -148,6 +161,7 @@ function CreateScene() {
             trees2.position.y = 2;
             trees2.position.z = Math.floor((Math.random() * 15) - 23);;
             trees2.castShadow = true;
+            trees2.receiveShadow = true;
             scene.add( trees2 );
           }
           //third quadrant
@@ -157,6 +171,7 @@ function CreateScene() {
             trees3.position.y = 2;
             trees3.position.z = Math.floor((Math.random() * -15) - 10);
             trees3.castShadow = true;
+            trees3.receiveShadow = true;
             scene.add( trees3 );
           }
           //fourth quadrant
@@ -166,6 +181,7 @@ function CreateScene() {
             trees4.position.y = 2;
             trees4.position.z = Math.floor((Math.random() * -15) + 25);
             trees4.castShadow = true;
+            trees4.receiveShadow = true;
             scene.add( trees4 );
           }
         }
@@ -192,20 +208,67 @@ function CreateScene() {
           museum_mesh.scale.set(0.5,0.5,0.5);
           museum_mesh.position.y += 1.25;
           museum_mesh.castShadow = true;
+          museum_mesh.receiveShadow = true;
           museum_mesh.name = "loaded_mesh";
           scene.add( museum_mesh );
         }
       });
     }, onProgress, onError);
   });
+
+  for (var i = 0; i < maxRain; i++) {
+    rainDrop = new THREE.Vector3(
+      Math.random() * 46 - 23,
+      Math.random() * 20,
+      Math.random() * 46 - 23
+    );
+    rainDrop.velocity = {};
+    rainDrop.velocity = 0;
+    points[i] = rainDrop;
+  }
+
+  for (var i = 0; i < rainCount; i++) {
+    rain_geometry.vertices.push(points[i]);
+  }
+  
+  rain_material = new THREE.PointsMaterial({
+    color: 0xaaaaaa,
+    size: 0.1,
+    transparent: true
+  });
+
+  var initCloudColor;
+  if (dia) {
+    initCloudColor = 0xffffff;
+  } else {
+    initCloudColor = 0x666666;
+  }
+
+  var cloud = new THREE.TextureLoader().load("img/cloud.png");
+  cloud_material = new THREE.SpriteMaterial({
+    map: cloud, 
+    opacity: 0.6, 
+    color: initCloudColor, 
+    fog: true
+  });
+
+  for (i = 0; i < maxClouds; i++) {
+    var x = Math.random() * 44 - 22;
+    var y = Math.random() * 2 + 18;
+    var z = Math.random() * 44 - 22;
+    sprite = new THREE.Sprite(cloud_material);
+    sprite.scale.set(6,3,6);
+    sprite.position.set(x, y, z);
+    clouds[i] = sprite;
+  }
 }
 
 CreateScene();
 
 //lighting
 //basic light from camera towards the scene
-var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.15 );
-camera.add( cameralight );
+var cameralight = new THREE.PointLight(new THREE.Color(1,1,1), 0.15);
+camera.add(cameralight);
 scene.add(camera);
 
 //then add ambient
@@ -231,12 +294,13 @@ var MyUpdateLoop = function () {
   sphere_mesh.position.y = moonlight.position.y;
   sphere_mesh.position.x = moonlight.position.x;
   if (auto) {
-    time_day+=1;
-    if (time_day>720) {
-      time_day=0;
+    time_day += 1;
+    if (time_day > 720) {
+      time_day = 0;
       toggleDayN();
     }
   }
+  updateRaindrops();
   sphere_mesh.rotation.x+=0.01
   requestAnimationFrame(MyUpdateLoop);
 };
@@ -261,17 +325,39 @@ function toggleDayN() {
     sphere_material.emissive = new THREE.Color("rgb(231, 248, 14)");
     sphere_material.emissiveIntensity = .5;
     moonlight.color.setHex(0xFFFFCC);
-    renderer.setClearColor (0x0080FF);
-    moonlight.intensity =  0.5;
+    renderer.setClearColor(0x0080FF);
+    moonlight.intensity = 0.5;
+    for (var i = 0; i < cloudCount; i++) {
+      scene.remove(clouds[i]);
+      clouds[i].material.color.set(0xffffff);
+      scene.add(clouds[i]);
+    }
   } else {
     moon_texture = new THREE.TextureLoader().load('img/moon.png');
     sphere_material.map= moon_texture;
     sphere_material.emissive = new THREE.Color("rgb(100, 100, 150)");
     sphere_material.emissiveIntensity = .3;
     moonlight.color.setHex(0x646496);
-    renderer.setClearColor (0x000011);
-    moonlight.intensity =  0.3;
+    renderer.setClearColor(0x000011);
+    moonlight.intensity = 0.3;
+    for (var i = 0; i < cloudCount; i++) {
+      scene.remove(clouds[i]);
+      clouds[i].material.color.set(0x666666);
+      scene.add(clouds[i]);
+    }
   }
+}
+
+function updateRaindrops() {
+  rain_geometry.vertices.forEach(p => {
+    p.velocity -= 0.01 + Math.random() * 0.01;
+    p.y += p.velocity;
+    if (p.y < 0) {
+      p.y = 18;
+      p.velocity = 0;
+    }
+  });
+  rain_geometry.verticesNeedUpdate = true;
 }
 
 var gui;
@@ -280,7 +366,11 @@ function buildGui() {
   var params = {
     time: time_day,
     day_night: dia,
-    auto: auto
+    auto: auto,
+    raindrops: rainCount,
+    rainy: rainy,
+    clouds: cloudCount,
+    cloudy: cloudy
   };
   gui.add(params, 'time', 0, 720).onChange(function(val) {
     time_day = val;
@@ -289,6 +379,51 @@ function buildGui() {
     auto = !auto;
   });
   gui.add(params, 'day_night', 0, 1).onChange(toggleDayN);
+  gui.add(params, 'raindrops', 100, maxRain).onChange(p => {
+    rainCount = p;
+    rain_geometry.dispose();
+    rain_geometry = new THREE.Geometry();
+    for (var i = 0; i < rainCount; i++) {
+        rain_geometry.vertices.push(points[i]);
+    }
+    scene.remove(rain);
+    rain = new THREE.Points(rain_geometry, rain_material);
+    scene.add(rain);
+  });
+  gui.add(params, 'rainy', 0, 1).onChange(p => {
+    if (p == 0) {
+      scene.remove(rain);
+    } else {
+      rain_geometry.dispose();
+      rain_geometry = new THREE.Geometry();
+      for (var i = 0; i < rainCount; i++) {
+        rain_geometry.vertices.push(points[i]);
+      }
+      scene.remove(rain);
+      rain = new THREE.Points(rain_geometry, rain_material);
+      scene.add(rain);
+    }
+  });
+  gui.add(params, 'clouds', 0, 500).onChange(p => {
+    for (var i = 0; i < cloudCount; i++) {
+      scene.remove(clouds[i]);
+    }
+    cloudCount = p;
+    for (var i = 0; i < cloudCount; i++) {
+      scene.add(clouds[i]);
+    }
+  });
+  gui.add(params, 'cloudy', 0, 1).onChange(p => {
+    if (p == 0) {
+      for (var i = 0; i < cloudCount; i++) {
+        scene.remove(clouds[i]);
+      }
+    } else {
+      for (var i = 0; i < cloudCount; i++) {
+        scene.add(clouds[i]);
+      }
+    }
+  });
   gui.open();
 }
 buildGui();
