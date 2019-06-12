@@ -122,7 +122,7 @@ function CreateScene() {
   sphere_mesh = new THREE.Mesh(sphere_geometry, sphere_material);
   sphere_mesh.position.y = 30;
   scene.add(sphere_mesh);
-  
+
   // model
   var onProgress = function ( xhr ) {
     if ( xhr.lengthComputable ) {
@@ -215,8 +215,36 @@ function CreateScene() {
           museum_mesh.position.y += 1.25;
           museum_mesh.castShadow = true;
           museum_mesh.receiveShadow = true;
-          museum_mesh.name = "loaded_mesh";
+          museum_mesh.name = "museum_mesh";
           scene.add( museum_mesh );
+        }
+      });
+    }, onProgress, onError);
+  });
+  mtlloader.load('olmechead/olmeca.mtl', function (materials) {
+    materials.preload();
+    var objloader = new THREE.OBJLoader();
+    objloader.setMaterials(materials);
+    objloader.setPath('/models/');
+    objloader.load('olmechead/olmeca.obj', function ( geometry ) {
+      geometry.traverse(function (child) {
+        if (child instanceof THREE.Mesh) {
+          child.geometry.computeFaceNormals();
+          child.geometry.computeVertexNormals();
+          child.geometry.computeBoundingBox();
+          var center = child.geometry.boundingBox.getCenter();
+          var size = child.geometry.boundingBox.getSize();
+          olmec_mesh = new THREE.Mesh(child.geometry, child.material);
+          olmec_mesh.scale.set(0.2,0.2,0.2);
+          olmec_mesh.position.y += 0.25;
+          olmec_mesh.position.z += 17;
+          olmec_mesh.rotation.x += -1.5;
+          olmec_mesh.rotation.z += 3.2;
+          //olmec_mesh.position.x -= 2.5;
+          olmec_mesh.castShadow = true;
+          olmec_mesh.receiveShadow = true;
+          olmec_mesh.name = "olmec_mesh";
+          scene.add( olmec_mesh );
         }
       });
     }, onProgress, onError);
@@ -236,7 +264,7 @@ function CreateScene() {
   for (var i = 0; i < rainCount; i++) {
     rain_geometry.vertices.push(points[i]);
   }
-  
+
   rain_material = new THREE.PointsMaterial({
     color: 0xaaaaaa,
     size: 0.1,
@@ -252,9 +280,9 @@ function CreateScene() {
 
   var cloud = new THREE.TextureLoader().load("img/cloud.png");
   cloud_material = new THREE.SpriteMaterial({
-    map: cloud, 
-    opacity: 0.6, 
-    color: initCloudColor, 
+    map: cloud,
+    opacity: 0.6,
+    color: initCloudColor,
     fog: true
   });
 
@@ -295,7 +323,7 @@ controls = new THREE.OrbitControls( camera, renderer.domElement );
 var MyUpdateLoop = function () {
   //call the render with the scene and the camera
   renderer.render(scene,camera);
-  
+
   controls.update();
   moonlight.position.x = 40 * Math.cos(3.1416/720*time_day);
   moonlight.position.y = 40 * Math.sin(3.1416/720*time_day);
@@ -354,6 +382,7 @@ function toggleDayN() {
       scene.add(clouds[i]);
     }
   }
+  moonlight.castShadow = true;
 }
 
 function updateRaindrops() {
@@ -436,5 +465,27 @@ function buildGui() {
 }
 buildGui();
 
+var raycaster = new THREE.Raycaster();
+
+function onDocumentMouseDown(event){
+  console.log("evento!!!");
+  var mouse = new THREE.Vector2;
+  mouse.x = event.clientX / renderer.domElement.clientWidth * 2 - 1;
+  mouse.y = -event.clientY / renderer.domElement.clientHeight * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  var intersect = raycaster.intersectObjects(scene.children, false);
+  if (intersect.length > 0) {
+    console.log("selected mesh");
+    if ((intersect[0].object.name == "olmec_mesh")) {
+      console.log("olmecas!!!");
+      alert("The Olmec colossal heads are stone representations of human heads sculpted from large basalt boulders. They range in height from 1.17 to 3.4 metres (3.8 to 11.2 ft). The heads date from at least 900 BC and are a distinctive feature of the Olmec civilization of ancient Mesoamerica");
+    }
+    else if ((intersect[0].object.name == "museum_mesh") ) {
+      console.log("museo!!!!");
+      alert("The Museo Soumaya is a private museum in Mexico City and a non-profit cultural institution with two museum buildings in Mexico City - Plaza Carso and Plaza Loreto. It has over 66,000 works from 30 centuries of art including sculptures from Pre-Hispanic Mesoamerica, 19th- and 20th-century Mexican art");
+    }
+  }
+}
+document.addEventListener('mousedown', onDocumentMouseDown, false);
 //link the resize of the window to the update of the camera
 window.addEventListener( 'resize', MyResize);
