@@ -486,6 +486,6 @@ if (intersect.length > 0) {
   }
 }
 }
-document.addEventListener('mouseup', onDocumentMouseUp, false);
+document.addEventListener('dblclick', onDocumentMouseUp, false);
 //link the resize of the window to the update of the camera
 window.addEventListener( 'resize', MyResize);
