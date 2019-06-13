@@ -37,7 +37,7 @@ var rain_geometry = new THREE.Geometry();
 var rain_material = new THREE.PointsMaterial();
 var rain = new THREE.Points();
 var rainCount = 100;
-var maxRain = 5000;
+var maxRain = 2500;
 var points = new Array(maxRain);
 var maxClouds = 500;
 var clouds = new Array(maxClouds);
@@ -48,11 +48,11 @@ var numTrees = 30;
 
 //this clear the scene when parameters are updated
 function ClearScene() {
-for (let i = scene.children.length - 1; i >= 0; i--) {
-  if(scene.children[i].type == "Mesh") {
-    scene.remove(scene.children[i]);
+  for (let i = scene.children.length - 1; i >= 0; i--) {
+    if (scene.children[i].type == "Mesh") {
+      scene.remove(scene.children[i]);
+    }
   }
-}
 }
 
 function CreateScene() {
@@ -134,12 +134,12 @@ var onError = function () { };
 //Trees
 var mtlTrees = new THREE.MTLLoader();
 mtlTrees.setPath('/models/');
-mtlTrees.load( 'lowpolytree.mtl', function (materials) {
+mtlTrees.load( 'tree/lowpolytree.mtl', function (materials) {
   materials.preload();
   var objTrees = new THREE.OBJLoader();
   objTrees.setMaterials(materials);
   objTrees.setPath('/models/');
-  objTrees.load('lowpolytree.obj', function (object) {
+  objTrees.load('tree/lowpolytree.obj', function (object) {
     object.traverse(function (child) {
       if (child instanceof THREE.Mesh) {
         child.geometry.computeFaceNormals();
@@ -194,15 +194,16 @@ mtlTrees.load( 'lowpolytree.mtl', function (materials) {
     });
   }, onProgress, onError );
 });
+
 //Soumaya
 var mtlloader = new THREE.MTLLoader();
 mtlloader.setPath('/models/');
-mtlloader.load('Soumaya1.mtl', function (materials) {
+mtlloader.load('Soumaya/Soumaya.mtl', function (materials) {
   materials.preload();
   var objloader = new THREE.OBJLoader();
   objloader.setMaterials(materials);
   objloader.setPath('/models/');
-  objloader.load('Soumaya1.obj', function ( geometry ) {
+  objloader.load('Soumaya/Soumaya.obj', function ( geometry ) {
     geometry.traverse(function (child) {
       if (child instanceof THREE.Mesh) {
         child.geometry.computeFaceNormals();
@@ -221,6 +222,7 @@ mtlloader.load('Soumaya1.mtl', function (materials) {
     });
   }, onProgress, onError);
 });
+
 mtlloader.load('olmechead/olmeca.mtl', function (materials) {
   materials.preload();
   var objloader = new THREE.OBJLoader();
@@ -245,6 +247,92 @@ mtlloader.load('olmechead/olmeca.mtl', function (materials) {
         olmec_mesh.receiveShadow = true;
         olmec_mesh.name = "olmec_mesh";
         scene.add( olmec_mesh );
+      }
+    });
+  }, onProgress, onError);
+});
+
+mtlloader.load('totem/totempole.mtl', function (materials) {
+  materials.preload();
+  var objloader = new THREE.OBJLoader();
+  objloader.setMaterials(materials);
+  objloader.setPath('/models/');
+  objloader.load('totem/totempole.obj', function ( geometry ) {
+    geometry.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.computeFaceNormals();
+        child.geometry.computeVertexNormals();
+        child.geometry.computeBoundingBox();
+        var center = child.geometry.boundingBox.getCenter();
+        var size = child.geometry.boundingBox.getSize();
+        totem_mesh = new THREE.Mesh(child.geometry, child.material);
+        totem_mesh.scale.set(0.025,0.025,0.025);
+        totem_mesh.position.y += 0.5;
+        totem_mesh.position.z -= 21;
+        totem_mesh.position.x += 1.7;
+        totem_mesh.rotation.x += -1.5;
+        totem_mesh.rotation.z += 3.15;
+        totem_mesh.castShadow = true;
+        totem_mesh.receiveShadow = true;
+        totem_mesh.name = "totem_mesh";
+        scene.add( totem_mesh );
+      }
+    });
+  }, onProgress, onError);
+});
+
+mtlloader.load('jaguar/jaguar.mtl', function (materials) {
+  materials.preload();
+  var objloader = new THREE.OBJLoader();
+  objloader.setMaterials(materials);
+  objloader.setPath('/models/');
+  objloader.load('jaguar/jaguar.obj', function ( geometry ) {
+    geometry.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.computeFaceNormals();
+        child.geometry.computeVertexNormals();
+        child.geometry.computeBoundingBox();
+        var center = child.geometry.boundingBox.getCenter();
+        var size = child.geometry.boundingBox.getSize();
+        jaguar_mesh = new THREE.Mesh(child.geometry, child.material);
+        jaguar_mesh.scale.set(0.1,0.1,0.1);
+        jaguar_mesh.position.y += 0.25;
+        jaguar_mesh.position.z -= 0.2;
+        jaguar_mesh.rotation.x += -1.575;
+        jaguar_mesh.rotation.z += 1.55;
+        jaguar_mesh.position.x += 17;
+        jaguar_mesh.castShadow = true;
+        jaguar_mesh.receiveShadow = true;
+        jaguar_mesh.name = "jaguar_mesh";
+        scene.add( jaguar_mesh );
+      }
+    });
+  }, onProgress, onError);
+});
+
+mtlloader.load('calendar/calendar.mtl', function (materials) {
+  materials.preload();
+  var objloader = new THREE.OBJLoader();
+  objloader.setMaterials(materials);
+  objloader.setPath('/models/');
+  objloader.load('calendar/calendar.obj', function ( geometry ) {
+    geometry.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.computeFaceNormals();
+        child.geometry.computeVertexNormals();
+        child.geometry.computeBoundingBox();
+        var center = child.geometry.boundingBox.getCenter();
+        var size = child.geometry.boundingBox.getSize();
+        calendar_mesh = new THREE.Mesh(child.geometry, child.material);
+        calendar_mesh.position.y += 2.25;
+        calendar_mesh.position.z -= 1.625;
+        calendar_mesh.rotation.x += Math.PI/2;
+        calendar_mesh.rotation.z += 1.55;
+        calendar_mesh.position.x -= 20;
+        calendar_mesh.castShadow = true;
+        calendar_mesh.receiveShadow = true;
+        calendar_mesh.name = "calendar_mesh";
+        scene.add( calendar_mesh );
       }
     });
   }, onProgress, onError);
@@ -468,23 +556,28 @@ buildGui();
 var raycaster = new THREE.Raycaster();
 
 function onDocumentMouseUp(event){
-console.log("evento!!!");
-var mouse = new THREE.Vector2;
-mouse.x = event.clientX / renderer.domElement.clientWidth * 2 - 1;
-mouse.y = -event.clientY / renderer.domElement.clientHeight * 2 + 1;
-raycaster.setFromCamera(mouse, camera);
-var intersect = raycaster.intersectObjects(scene.children, false);
-if (intersect.length > 0) {
-  console.log("selected mesh");
-  if ((intersect[0].object.name == "olmec_mesh")) {
-    console.log("olmecas!!!");
-    alert("The Olmec colossal heads are stone representations of human heads sculpted from large basalt boulders. They range in height from 1.17 to 3.4 metres (3.8 to 11.2 ft). The heads date from at least 900 BC and are a distinctive feature of the Olmec civilization of ancient Mesoamerica");
+  var mouse = new THREE.Vector2;
+  mouse.x = event.clientX / renderer.domElement.clientWidth * 2 - 1;
+  mouse.y = -event.clientY / renderer.domElement.clientHeight * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  var intersect = raycaster.intersectObjects(scene.children, false);
+  if (intersect.length > 0) {
+    if ((intersect[0].object.name == "olmec_mesh")) {
+      alert("The Olmec colossal heads are stone representations of human heads sculpted from large basalt boulders. They range in height from 1.17 to 3.4 metres (3.8 to 11.2 ft). The heads date from at least 900 BC and are a distinctive feature of the Olmec civilization of ancient Mesoamerica");
+    }
+    else if ((intersect[0].object.name == "museum_mesh") ) {
+      alert("The Museo Soumaya is a private museum in Mexico City and a non-profit cultural institution with two museum buildings in Mexico City - Plaza Carso and Plaza Loreto. It has over 66,000 works from 30 centuries of art including sculptures from Pre-Hispanic Mesoamerica, 19th- and 20th-century Mexican art ");
+    }
+    else if ((intersect[0].object.name == "totem_mesh")) {
+      alert("");
+    }
+    else if ((intersect[0].object.name == "jaguar_mesh")) {
+      alert("");
+    }
+    else if ((intersect[0].object.name == "calendar_mesh")) {
+      alert("");
+    }
   }
-  else if ((intersect[0].object.name == "museum_mesh") ) {
-    console.log("museo!!!!");
-    alert("The Museo Soumaya is a private museum in Mexico City and a non-profit cultural institution with two museum buildings in Mexico City - Plaza Carso and Plaza Loreto. It has over 66,000 works from 30 centuries of art including sculptures from Pre-Hispanic Mesoamerica, 19th- and 20th-century Mexican art ");
-  }
-}
 }
 document.addEventListener('dblclick', onDocumentMouseUp, false);
 //link the resize of the window to the update of the camera
