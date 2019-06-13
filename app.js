@@ -569,13 +569,13 @@ function onDocumentMouseUp(event){
       alert("The Museo Soumaya is a private museum in Mexico City and a non-profit cultural institution with two museum buildings in Mexico City - Plaza Carso and Plaza Loreto. It has over 66,000 works from 30 centuries of art including sculptures from Pre-Hispanic Mesoamerica, 19th- and 20th-century Mexican art ");
     }
     else if ((intersect[0].object.name == "totem_mesh")) {
-      alert("");
+      alert("Why is a Canadian totem in the middle of Mexico City? In 1962, the Chapultepec Park totem pole was donated by the Canadian government to commemorate the 150th anniversary of Mexico’s independence. The carving and design was commissioned to the Aboriginal artist Mungo Martin who was supported by Henry Hunt and Tony Hunt - all descendants of the Kwakwaka'wakw clan. Since it was erected in the Chapultepec Park 52 years ago, the totem has symbolized the deep friendship between the Canadian and the Mexican people.");
     }
     else if ((intersect[0].object.name == "jaguar_mesh")) {
-      alert("");
+      alert("All major Mesoamerican civilizations prominently featured a jaguar god, and for many, such as the Olmec, the jaguar was an important part of shamanism.For those who resided in or near the tropical jungle, the jaguar was well known and became incorporated into the lives of the inhabitants. The jaguar's formidable size, reputation as a predator, and its evolved capacities to survive in the jungle made it an animal to be revered. The Olmec and the Maya witnessed this animal's habits, adopting the jaguar as an authoritative and martial symbol, and incorporated the animal into their mythology. The jaguar stands today, as it did in the past, as an important symbol in the lives of those who coexist with this feline.");
     }
     else if ((intersect[0].object.name == "calendar_mesh")) {
-      alert("");
+      alert("Aztec calendar, dating system based on the Mayan calendar and used in the Valley of Mexico before the destruction of the Aztec empire. Like the Mayan calendar, the Aztec calendar consisted of a ritual cycle of 260 days and a 365-day civil cycle. The ritual cycle, or tonalpohualli, contained two smaller cycles, an ordered sequence of 20 named days and a sequence of days numbered from 1 to 13. The 13-day cycle was particularly important for religious observance, and each of the 20 numbered cycles within the ritual year was associated with a different deity. Similarly, each named day was associated with a unique deity, and scholars believe that the combinations of ruling deities were used for divination.");
     }
   }
 }
