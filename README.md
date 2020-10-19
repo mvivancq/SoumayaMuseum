@@ -14,4 +14,4 @@ What we're trying to recreate:
 
 Results:
 <img src="resultImage.png" alt="Museo Soumaya picture" style="width:; float: left;"/>
-<img src="resultImageDay.png" alt="Museo Soumaya picture" style="width:; float: left;"/>
+<img src="resultimageDay.png" alt="Museo Soumaya picture" style="width:; float: left;"/>
