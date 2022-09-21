@@ -1,17 +1,19 @@
 # Introduction to Computer Graphics Final Assessment
 
-Recreation of the Museo Soumaya using Three.js library
+<h6>Recreation of the Museo Soumaya using Three.js library</h6>
 
-Setup Instructions:
-1.Download Project
-2.Open terminal in directory 
-3.In terminal execute: php -S 127.0.0.1:8080
-4.Open: http://127.0.0.1:8080/project.html
+<h6>Setup Instructions:<h6>
+<ol>
+<li>Download Project</li>
+<li>Open terminal in directory </li>
+<li>In terminal execute: php -S 127.0.0.1:8080</li>
+<li>Open: http://127.0.0.1:8080/project.html</li>
+</ol>
 
-What we're trying to recreate:
+<h6>What we're trying to recreate:</h6>
 
 <img src="img/realSoumaya.jpg" alt="Museo Soumaya picture" style="width:; float: left;"/>
 
-Results:
+<h6>Results:</h6>
 <img src="resultImage.png" alt="Museo Soumaya picture" style="width:; float: left;"/>
 <img src="resultimageDay.png" alt="Museo Soumaya picture" style="width:; float: left;"/>
